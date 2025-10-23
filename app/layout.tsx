@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
+import { CryptoSubtlePolyfill } from "@/components/providers/crypto-subtle-polyfill";
 
 import "./globals.css";
-
-import { AppProvider } from "@/components/providers/app-provider";
-import { CommandMenu } from "@/components/system/command-menu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,17 +27,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/app"
+      afterSignUpUrl="/onboarding"
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased`}
         >
-          <AppProvider>
-            {children}
-            <Suspense>
-              <CommandMenu />
-            </Suspense>
-          </AppProvider>
+          <CryptoSubtlePolyfill />
+          {children}
         </body>
       </html>
     </ClerkProvider>
