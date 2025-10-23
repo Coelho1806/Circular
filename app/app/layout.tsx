@@ -1,14 +1,16 @@
 "use client";
 
+import { ReactNode, Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { UserSync } from "@/components/providers/user-sync";
+import { AppProvider } from "@/components/providers/app-provider";
+import { CommandMenu } from "@/components/system/command-menu";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useUser();
   const workspaces = useQuery(api.workspaces.listWorkspaces, {});
@@ -38,10 +40,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <UserSync />
-      <Sidebar workspace={workspaces[0]} />
-      <main className="ml-64 min-h-screen">{children}</main>
-    </div>
+    <AppProvider>
+      <div className="min-h-screen bg-slate-950">
+        <UserSync />
+        <Sidebar workspace={workspaces[0]} />
+        <main className="ml-64 min-h-screen">{children}</main>
+        <Suspense>
+          <CommandMenu />
+        </Suspense>
+      </div>
+    </AppProvider>
   );
 }
